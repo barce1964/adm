@@ -1,10 +1,5 @@
-import $ from 'jquery';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Editor from './components/editor';
 
-$.get("./api", data => {
-    // for (let i = 0; i < data.length; i++) {
-    //     $("body").append('<h1>' + data[i] + '</h1>')
-    // }
-    data.forEach(file => {
-        $("body").append(`<h1>${file}</h1>`)
-    })
-}, "JSON")
+ReactDOM.render(<Editor/>, document.getElementById("root"));
