@@ -122,10 +122,21 @@ class Editor extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
     }));
   }
 
+  clearPageName() {
+    const namePage = document.getElementById("inPage");
+    namePage.value = "";
+  }
+
   createNewPage() {
     axios__WEBPACK_IMPORTED_MODULE_0___default.a.post("./api/createNewPage.php", {
       "name": this.state.newPageName
-    }).then(this.loadPageList()).catch(() => alert("Страница уже существует!"));
+    }).then(this.loadPageList()).catch(() => alert("Страница уже существует!")).then(this.clearPageName());
+  }
+
+  deletePage(page) {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post("./api/deletePage.php", {
+      "name": page
+    }).then(this.loadPageList()).catch(() => alert("Страницы не существует!"));
   }
 
   render() {
@@ -135,9 +146,13 @@ class Editor extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
     const pages = pageList.map((page, i) => {
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", {
         key: i
-      }, page);
+      }, page + "  ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
+        href: "#",
+        onClick: () => this.deletePage(page)
+      }, "x"));
     });
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
+      id: "inPage",
       onChange: e => {
         this.setState({
           newPageName: e.target.value
