@@ -96,15 +96,19 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Editor; });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _helpers_iframeLoader_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../helpers/iframeLoader.js */ "./app/src/helpers/iframeLoader.js");
+/* harmony import */ var _helpers_iframeLoader_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_helpers_iframeLoader_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
 
 
-class Editor extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
+
+class Editor extends react__WEBPACK_IMPORTED_MODULE_2__["Component"] {
   constructor() {
     super();
+    this.currentPage = "index.html";
     this.state = {
       pageList: [],
       newPageName: ""
@@ -113,11 +117,24 @@ class Editor extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
   }
 
   componentDidMount() {
+    this.init(this.currentPage);
+  }
+
+  init(page) {
+    this.iframe = document.querySelector("iframe");
+    this.open(page);
     this.loadPageList();
   }
 
+  open(page) {
+    this.currentPage = `../${page}`;
+    this.iframe.load(this.currentPage, () => {
+      console.log(this.currentPage);
+    });
+  }
+
   loadPageList() {
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("./api").then(res => this.setState({
+    axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("./api").then(res => this.setState({
       pageList: res.data
     }));
   }
@@ -128,40 +145,39 @@ class Editor extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
   }
 
   createNewPage() {
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post("./api/createNewPage.php", {
+    axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("./api/createNewPage.php", {
       "name": this.state.newPageName
     }).then(this.loadPageList()).catch(() => alert("Страница уже существует!")).then(this.clearPageName());
   }
 
   deletePage(page) {
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post("./api/deletePage.php", {
+    axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("./api/deletePage.php", {
       "name": page
     }).then(this.loadPageList()).catch(() => alert("Страницы не существует!"));
   }
 
   render() {
-    const {
-      pageList
-    } = this.state;
-    const pages = pageList.map((page, i) => {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", {
-        key: i
-      }, page + "  ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
-        href: "#",
-        onClick: () => this.deletePage(page)
-      }, "x"));
-    });
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
-      id: "inPage",
-      onChange: e => {
-        this.setState({
-          newPageName: e.target.value
-        });
-      },
-      type: "text"
-    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
-      onClick: this.createNewPage
-    }, "\u0421\u043E\u0437\u0434\u0430\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443"), pages);
+    // const {pageList} = this.state;
+    // const pages = pageList.map((page, i) => {
+    //     return (
+    //         <h1 key={i}>{page+"  "}
+    //             <a
+    //                 href="#" onClick={() => this.deletePage(page)}>x
+    //             </a>    
+    //         </h1>
+    //     )
+    // });
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("iframe", {
+      src: this.currentPage,
+      frameBorder: "0"
+    }) // <>
+    //     <input id="inPage"
+    //         onChange={(e) => {this.setState({newPageName: e.target.value})}}
+    //         type="text"/>
+    //     <button onClick={this.createNewPage}>Создать страницу</button>
+    //     {pages}
+    // </iframe>
+    ;
   }
 
 }
@@ -180,6 +196,62 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _editor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./editor */ "./app/src/components/editor/editor.js");
 
 /* harmony default export */ __webpack_exports__["default"] = (_editor__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+/***/ }),
+
+/***/ "./app/src/helpers/iframeLoader.js":
+/*!*****************************************!*\
+  !*** ./app/src/helpers/iframeLoader.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+HTMLIFrameElement.prototype.load = function (url, callback) {
+  const iframe = this;
+
+  try {
+    iframe.src = url + "?rnd=" + Math.random().toString().substring(2);
+  } catch (error) {
+    if (!callback) {
+      return new Promise((resolve, reject) => {
+        reject(error);
+      });
+    } else {
+      callback(error);
+    }
+  }
+
+  const maxTime = 60000;
+  const interval = 200;
+  let timerCount = 0;
+
+  if (!callback) {
+    return new Promise((resolve, reject) => {
+      const timer = setInterval(function () {
+        if (!iframe) return clearInterval(timer);
+        timerCount++;
+
+        if (iframe.contentDocument && iframe.contentDocument.readyState === "complete") {
+          clearInterval(timer);
+          resolve();
+        } else if (timerCount * interval > maxTime) {
+          reject(new Error("Iframe load fail!"));
+        }
+      }, interval);
+    });
+  } else {
+    const timer = setInterval(function () {
+      if (!iframe) return clearInterval(timer);
+
+      if (iframe.contentDocument && iframe.contentDocument.readyState === "complete") {
+        clearInterval(timer);
+        callback();
+      } else if (timerCount * interval > maxTime) {
+        callback(new Error("Iframe load fail!"));
+      }
+    }, interval);
+  }
+};
 
 /***/ }),
 
