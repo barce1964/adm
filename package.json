@@ -9,9 +9,11 @@
   "author": "",
   "license": "ISC",
   "browserslist": [
-    "last 2 chrome versions",
-    "last 2 firefox versions",
-    "last 2 ios versions"
+    "last 20 ie versions",
+    "last 20 opera versions",
+    "last 20 chrome versions",
+    "last 20 firefox versions",
+    "last 20 ios versions"
   ],
   "dependencies": {
     "axios": "^0.21.0",
