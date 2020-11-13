@@ -1,12 +1,11 @@
 {
-  "name": "AT-Admin",
+  "name": "at-admin",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Alexander Tarayev",
   "license": "ISC",
   "browserslist": [
     "last 20 ie versions",
@@ -26,11 +25,20 @@
     "@babel/preset-react": "^7.7.0",
     "babel-loader": "^8.0.6",
     "gulp": "^4.0.2",
-    "gulp-sass": "^4.0.2",
+    "gulp-sass": "^4.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
     "webpack-stream": "^5.2.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/barce1964/adm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/barce1964/adm/issues"
+  },
+  "homepage": "https://github.com/barce1964/adm#readme",
+  "description": ""
 }

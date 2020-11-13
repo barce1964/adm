@@ -86,6 +86,107 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./app/src/components/editor-text/editor-text.js":
+/*!*******************************************************!*\
+  !*** ./app/src/components/editor-text/editor-text.js ***!
+  \*******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EditorText; });
+/* harmony import */ var core_js_modules_es_object_define_property__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.object.define-property */ "./node_modules/core-js/modules/es.object.define-property.js");
+/* harmony import */ var core_js_modules_es_object_define_property__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_define_property__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var EditorText = /*#__PURE__*/function () {
+  function EditorText(element, virtualElement) {
+    var _this = this;
+
+    _classCallCheck(this, EditorText);
+
+    this.element = element;
+    this.virtualElement = virtualElement;
+    this.element.addEventListener("click", function () {
+      return _this.onClick();
+    });
+    this.element.addEventListener("blur", function () {
+      return _this.onBlur();
+    });
+    this.element.addEventListener("keypress", function (e) {
+      return _this.onKeypress(e);
+    });
+    this.element.addEventListener("input", function () {
+      return _this.onTextEdit();
+    });
+
+    if (this.element.parentNode.nodeName === "A" || this.element.parentNode.nodeName === "BUTTON") {
+      this.element.addEventListener("contextmenu", function (e) {
+        return _this.onCtxMenu(e);
+      });
+    }
+  }
+
+  _createClass(EditorText, [{
+    key: "onClick",
+    value: function onClick() {
+      this.element.contentEditable = "true";
+      this.element.focus();
+    }
+  }, {
+    key: "onBlur",
+    value: function onBlur() {
+      this.element.removeAttribute('contenteditable');
+    }
+  }, {
+    key: "onKeypress",
+    value: function onKeypress(e) {
+      if (e.keyCode === 13) {
+        this.element.blur();
+      }
+    }
+  }, {
+    key: "onCtxMenu",
+    value: function onCtxMenu(e) {
+      e.preventDefault();
+      this.onClick();
+    }
+  }, {
+    key: "onTextEdit",
+    value: function onTextEdit() {
+      this.virtualElement.innerHTML = this.element.innerHTML;
+    }
+  }]);
+
+  return EditorText;
+}();
+
+
+
+/***/ }),
+
+/***/ "./app/src/components/editor-text/index.js":
+/*!*************************************************!*\
+  !*** ./app/src/components/editor-text/index.js ***!
+  \*************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _editor_text__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./editor-text */ "./app/src/components/editor-text/editor-text.js");
+
+/* harmony default export */ __webpack_exports__["default"] = (_editor_text__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+/***/ }),
+
 /***/ "./app/src/components/editor/editor.js":
 /*!*********************************************!*\
   !*** ./app/src/components/editor/editor.js ***!
@@ -138,6 +239,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_20__);
 /* harmony import */ var _helpers_dom_helper_js__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../../helpers/dom-helper.js */ "./app/src/helpers/dom-helper.js");
+/* harmony import */ var _editor_text__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ../editor-text */ "./app/src/components/editor-text/index.js");
 
 
 
@@ -178,6 +280,7 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 
 
 
@@ -235,6 +338,8 @@ var Editor = /*#__PURE__*/function (_Component) {
         return _this2.iframe.load("../temp.html");
       }).then(function () {
         return _this2.enableEditing();
+      }).then(function () {
+        return _this2.injectStyles();
       });
     }
   }, {
@@ -254,17 +359,19 @@ var Editor = /*#__PURE__*/function (_Component) {
       var _this3 = this;
 
       this.iframe.contentDocument.body.querySelectorAll("text-editor").forEach(function (element) {
-        element.contentEditable = "true";
-        element.addEventListener("input", function () {
-          _this3.onTextEdit(element);
-        });
+        var id = element.getAttribute("nodeid");
+
+        var virtualElement = _this3.virtualDom.body.querySelector("[nodeid=\"".concat(id, "\"]"));
+
+        new _editor_text__WEBPACK_IMPORTED_MODULE_22__["default"](element, virtualElement);
       });
     }
   }, {
-    key: "onTextEdit",
-    value: function onTextEdit(element) {
-      var id = element.getAttribute("nodeid");
-      this.virtualDom.body.querySelector("[nodeid=\"".concat(id, "\"]")).innerHTML = element.innerHTML;
+    key: "injectStyles",
+    value: function injectStyles() {
+      var style = this.iframe.contentDocument.createElement("style");
+      style.innerHTML = "\n            text-editor:hover {\n                outline: 3px solid orange;\n                outline-offset:8px;\n            }\n            text-editor:focus {\n                outline: 3px solid red;\n                outline-offset:8px;\n            }\n        ";
+      this.iframe.contentDocument.head.appendChild(style);
     }
   }, {
     key: "loadPageList",
