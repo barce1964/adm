@@ -3,6 +3,7 @@ import axios from 'axios';
 import React, {Component} from 'react';
 import DOMHelper from '../../helpers/dom-helper.js';
 import EditorText from '../editor-text';
+import UIKit from 'uikit';
 
 export default class Editor extends Component {
     constructor() {
@@ -13,6 +14,7 @@ export default class Editor extends Component {
             newPageName: ""
         }
         this.createNewPage = this.createNewPage.bind(this);
+        this.save = this.save.bind(this);
     }
 
     componentDidMount() {
@@ -96,30 +98,15 @@ export default class Editor extends Component {
     }
 
     render() {
-        // const {pageList} = this.state;
-        // const pages = pageList.map((page, i) => {
-        //     return (
-        //         <h1 key={i}>{page}
-        //             <a 
-        //             href="#"
-        //             onClick={() => this.deletePage(page)}>(x)</a>
-        //         </h1>
-        //     )
-        // });
-
+        const modal = true;
         return (
             <>
-                <button onClick={() => this.save()}>Сохранить</button>
                 <iframe src={this.currentPage} frameBorder="0"></iframe>
+
+                <div className="panel">
+                    <button className="uk-button uk-button-primary" onClick={this.save}>Опубликовать</button>
+                </div>
             </>
-            
-            // <>
-            //     <input
-            //         onChange={(e) => {this.setState({newPageName: e.target.value})}} 
-            //         type="text"/>
-            //     <button onClick={this.createNewPage}>Создать страницу</button>
-            //     {pages}
-            // </>
         )
     }
 }
