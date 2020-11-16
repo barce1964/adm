@@ -3,7 +3,8 @@ import axios from 'axios';
 import React, {Component} from 'react';
 import DOMHelper from '../../helpers/dom-helper.js';
 import EditorText from '../editor-text';
-import UIKit from 'uikit';
+import UIkit from 'uikit';
+import Spinner from '../spinner';
 
 export default class Editor extends Component {
     constructor() {
@@ -11,10 +12,13 @@ export default class Editor extends Component {
         this.currentPage = "index.html";
         this.state = {
             pageList: [],
-            newPageName: ""
+            newPageName: "",
+            loading: true
         }
         this.createNewPage = this.createNewPage.bind(this);
         this.save = this.save.bind(this);
+        this.isLoading = this.isLoading.bind(this);
+        this.isLoaded = this.isLoaded.bind(this);
     }
 
     componentDidMount() {
@@ -23,11 +27,11 @@ export default class Editor extends Component {
 
     init(page) {
         this.iframe = document.querySelector('iframe');
-        this.open(page);
+        this.open(page, this.isLoaded);
         this.loadPageList();
     }
 
-    open(page) {
+    open(page, cb) {
         this.currentPage = page;
 
         axios
@@ -42,16 +46,22 @@ export default class Editor extends Component {
             .then(html => axios.post("./api/saveTempPage.php", {html}))
             .then(() => this.iframe.load("../temp.html"))
             .then(() => this.enableEditing())
-            .then(() => this.injectStyles());
+            .then(() => this.injectStyles())
+            .then(cb);
     }
 
     save() {
+        this.isLoading();
         const newDom = this.virtualDom.cloneNode(this.virtualDom);
         DOMHelper.unwrapTextNodes(newDom);
         const html = DOMHelper.serializeDOMToString(newDom);
+        //const notif = new UIKit();
         axios
-            .post("./api/savePage.php", {pageName: this.currentPage, html});
-    }
+            .post("./api/savePage.php", {pageName: this.currentPage, html})
+            .then(() => UIkit.notification({message: 'Успешно опубликовано.', status: 'success', pos: 'bottom-right'}))
+            .catch(() => UIkit.notification({message: 'Что-то пошло не так.', status: 'danger', pos: 'bottom-right'}))
+            .finally(this.isLoaded);
+        }
 
     enableEditing() {
         this.iframe.contentDocument.body.querySelectorAll("text-editor").forEach(element => {
@@ -97,11 +107,30 @@ export default class Editor extends Component {
             .catch(() => alert("Страницы не существует!"));
     }
 
+    isLoading() {
+        this.setState({
+            loading: true
+        })
+    }
+
+    isLoaded() {
+        this.setState({
+            loading: false
+        })
+    }
+
     render() {
         const modal = true;
+        const {loading} = this.state;
+        let spinner;
+
+        loading ? spinner = <Spinner active/> : spinner = <Spinner/>
+
         return (
             <>
                 <iframe src={this.currentPage} frameBorder="0"></iframe>
+
+                {spinner}
 
                 <div className="panel">
                     <button className="uk-button uk-button-primary" onClick={this.save}>Опубликовать</button>
